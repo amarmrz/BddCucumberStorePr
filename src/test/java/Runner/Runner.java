@@ -6,9 +6,13 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(stepNotifications = true, plugin = {
-		"html:target/Myreport.html" }, features = "Features\\Login.feature", glue = {
-				"stepDifinition" },dryRun = false)
+@CucumberOptions(stepNotifications = true, plugin = { "pretty",
+		"html:target/Myreport.html"},
+        features = "Features\\Customers.feature", 
+        glue = { "stepDifinition" },
+        dryRun = false,
+        monochrome = true,
+        tags = "@smoke")
 public class Runner {
 
 }
