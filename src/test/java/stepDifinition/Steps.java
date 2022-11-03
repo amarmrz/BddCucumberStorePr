@@ -1,47 +1,74 @@
 package stepDifinition;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
-import io.cucumber.java.en.*;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import pageObjects.CustomersPage;
 import pageObjects.LoginPage;
 import pageObjects.SearchCustomerPage;
 
 public class Steps extends BaseClass {
+	@Before
+	public void setup() throws IOException {
+		properties = new Properties();
+		FileInputStream ip = new FileInputStream("config.properties");
+		properties.load(ip);
+
+		logger = Logger.getLogger("nopCommerce");
+		PropertyConfigurator.configure("Log4j.properties");
+		String br = properties.getProperty("browser");
+
+		if (br.equals("chrome")) {
+			System.setProperty("webdriver.chrome.driver", properties.getProperty("chromepath"));
+			driver = new ChromeDriver();
+		} else if (br.equals("firefox")) {
+			System.setProperty("Firefox.Driver", properties.getProperty("firefoxpath"));
+			driver = new FirefoxDriver();
+		}
+		logger.info("..........Lunching Browser.....");
+		driver.manage().window().maximize();
+	}
 
 	@Given("^User Launch Chrome browser$")
 	public void user_launch_chrome_browser() {
-		System.setProperty("webdriver.chrome.driver", "Drivers//chromedriver.exe");
-		driver = new ChromeDriver();
-		driver.manage().window().maximize();
+
 		loginPage = new LoginPage(driver);
 
 	}
 
 	@When("^User opens URL \"([^\"]*)\"$")
 	public void user_opens_url_something(String URL) {
+		logger.info("..........Lunching Url.....");
 		driver.get(URL);
 	}
 
 	@And("^User enters Email as \"([^\"]*)\" and Password as \"([^\"]*)\"$")
 	public void user_enters_email_as_something_and_password_as_something(String email, String password) {
+		logger.info("..........User entring Credeandial.....");
 		loginPage.setUserName(email);
 		loginPage.setPassword(password);
 
 	}
 
 	@And("^Click on Login$")
-	public void click_on_login() {
+	public void click_on_login() throws InterruptedException {
+		logger.info("..........User clicks on Login.....");
 		loginPage.clickLogin();
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Thread.sleep(3000);
+
 	}
 
 	@Then("^Page Title should be \"([^\"]*)\"$")
